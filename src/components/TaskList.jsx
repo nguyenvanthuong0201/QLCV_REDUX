@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import TaskItem from "./TaskItem";
 import { connect } from "react-redux";
+import * as action from "../actions/index";
 
 class TaskList extends Component {
   constructor(props) {
@@ -15,18 +16,58 @@ class TaskList extends Component {
     let target = event.target;
     let name = target.name;
     let value = target.value; /// lấy dự liệu nhập vô đẩy ra cho index( cha)
-    this.props.onFilter(
-      name === "filterName" ? value : this.state.filterName,
-      name === "filterStatus" ? value : this.state.filterStatus
-    );
+    let filter = {
+      name: name === "filterName" ? value : this.state.filterName,
+      status: name === "filterStatus" ? value : this.state.filterStatus,
+    };
+    this.props.onFilterTable(filter);
     this.setState({
       [name]: value,
     });
   };
 
   render() {
-    // console.log(this.props.task);
-    let { task } = this.props; /// gọi từ index(cha) sang
+    let { task, filterTable, keyword,sort } = this.props;
+    // --filter table --
+    if (filterTable.name) {
+      task = task.filter((task) => {
+        //dùng filter để trả về 1 cái task khác
+        return (
+          task.name.toLowerCase().indexOf(filterTable.name.toLowerCase()) !== -1
+        ); /// chuyển chuỗi (task.name)về thường và đặt điều kiện nếu nó ===1 thì không tìm thấy
+      });
+    }
+    task = task.filter((task) => {
+      if (filterTable.status === -1) {
+        /// -1 là tất cả nên trả về lại task
+        return task;
+      } else {
+        return task.status === (filterTable.status === 1 ? true : false); /// trả về true / false
+      }
+    });
+    //--search
+     if (keyword) {
+      ////Search theo key word
+      task = task.filter((task) => {
+        return task.name.toLowerCase().indexOf(keyword.toLowerCase()) !== -1;
+      });
+    }
+    ///sort 
+        ///sort giá trị trong mãng
+    if (sort.by === "name") {
+      task.sort((a, b) => {
+        if (a.name > b.name) return sort.value;
+        else if (a.name < b.name) return -sort.value;
+        else return 0;
+      });
+    } else {
+      task.sort((a, b) => {
+        if (a.status > b.status) return -sort.value;
+        else if (a.status < b.status) return sort.value;
+        else return 0;
+      });
+    }
+
     let { filterName, filterStatus } = this.state; // trong thư mục TaskList
     let elmTask = task.map((task, index) => {
       //   Dùng vòng lập để danh sách ra truyền vào TaskItem
@@ -36,7 +77,6 @@ class TaskList extends Component {
           index={index}
           key={index} ///truyền dữ liệu sang task Item
           // onDelete={this.props.onDelete}
-          onUpdate={this.props.onUpdate}
         />
       );
     });
@@ -87,7 +127,17 @@ class TaskList extends Component {
 
 const mapStateToProps = (state) => {
   return {
-    task: state.task 
-  }
+    task: state.task,
+    filterTable: state.filterTable,
+    keyword: state.search,
+    sort: state.sort
+  };
 };
-export default connect(mapStateToProps, null)(TaskList);
+const mapDispatchToProps = (dispatch, props) => {
+  return {
+    onFilterTable: (filter) => {
+      dispatch(action.filterTask(filter));
+    },
+  };
+};
+export default connect(mapStateToProps, mapDispatchToProps)(TaskList);

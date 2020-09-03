@@ -55,11 +55,12 @@ class TaskForm extends Component {
 
   onClear=()=>{       //set mặc định
     this.setState({
+      id:"",
       name:"",
       status:false
     })
   }
-
+ 
   render() {    
     let{id}=this.state;
     if(!this.props.isDisplayForm )return'';

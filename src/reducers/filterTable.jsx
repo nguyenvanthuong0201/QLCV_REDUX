@@ -1,14 +1,15 @@
 import * as types from "../constants/ActionTypes";
 let initialState={
-    id:'',
     name:'',
-    status:false
+    status:-1               ///lấy tất cả 
 }
 let myReducer = (state = initialState,action)=>{
     switch (action.type) {
-        case types.EDIT_ITEM:
-            // console.log("edit",action)
-            return action.task;
+        case types.FILTER_TABLE:
+            return{
+                name: action.filter.name,
+                status: parseInt(action.filter.status)
+            };
         default: return state;
     }
 }

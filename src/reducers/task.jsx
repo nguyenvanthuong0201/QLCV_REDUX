@@ -19,6 +19,7 @@ let myReducer = (state = initialState, action) => {
     case types.LIST_ALL: ///hiển thị danh sách
       return state;
 
+      
     case types.SAVE_TASK: ///thêm nhân viên
       console.log(action);
       let task = {
@@ -31,12 +32,14 @@ let myReducer = (state = initialState, action) => {
         state.push(task)
       }
       else
-      {
+      { 
         let index = findIndex(state,task.id);
         state[index]=task
       }
       localStorage.setItem("task", JSON.stringify(state));
       return [...state];
+
+
     case types.UPDATE_STATUS_TASK: ///thay đổi status
       console.log(action);
       let id = action.id;

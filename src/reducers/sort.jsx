@@ -1,14 +1,15 @@
 import * as types from "../constants/ActionTypes";
 let initialState={
-    id:'',
-    name:'',
-    status:false
+    by:'',
+    value:-1               ///lấy tất cả 
 }
 let myReducer = (state = initialState,action)=>{
     switch (action.type) {
-        case types.EDIT_ITEM:
-            // console.log("edit",action)
-            return action.task;
+        case types.SORT:
+            return{
+                by:action.sort.by,
+                value:action.sort.value
+            };
         default: return state;
     }
 }
